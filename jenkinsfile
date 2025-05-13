@@ -1,15 +1,35 @@
-@Library('my-shared-lib') _  
+// @Library('my-shared-lib') _  
+
+// pipeline {
+//     agent any
+//     stages {
+//         stage('Install Dependencies') {
+//             steps {
+//                 demo() 
+//             }
+//         }
+//         stage('Run App') {
+//             steps {
+//                 sh 'npm start'
+//             }
+//         }
+//     }
+// }
 
 pipeline {
     agent any
+
     stages {
         stage('Install Dependencies') {
             steps {
-                demo() 
+                echo 'Installing dependencies...'
+                sh 'npm install'
             }
         }
+
         stage('Run App') {
             steps {
+                echo 'Running app in dev environment...'
                 sh 'npm start'
             }
         }
