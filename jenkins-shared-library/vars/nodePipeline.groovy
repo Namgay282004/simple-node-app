@@ -1,17 +1,10 @@
-def call(Map config = [:]) {
+def call() {
     pipeline {
         agent any
-
-        tools {
-            nodejs "${config.nodejsTool ?: 'NodeJS 24.0.2'}"
-        }
-
         environment {
-            CI = 'true'
-            DOCKER_IMAGE = config.dockerImage ?: '02230290namgay/simple-node-app:latest'
-            DOCKER_CREDENTIALS_ID = config.dockerCredentialsId ?: 'docker-hub-creds'
+            IMAGE_NAME = '02230290namgay/simple-node-app'
+            IMAGE_TAG = 'latest'  // You can change this dynamically if needed
         }
-
         stages {
             stage('Install Dependencies') {
                 steps {
@@ -23,40 +16,24 @@ def call(Map config = [:]) {
                 steps {
                     sh 'npm test'
                 }
-                post {
-                    always {
-                        junit 'junit.xml'
-                    }
-                }
             }
 
             stage('Build Docker Image') {
                 steps {
-                    script {
-                        dockerImage = docker.build("${env.DOCKER_IMAGE}:${env.BUILD_NUMBER}")
-                    }
+                    sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
                 }
             }
 
             stage('Push Docker Image') {
                 steps {
-                    script {
-                        docker.withRegistry('', env.DOCKER_CREDENTIALS_ID) {
-                            dockerImage.push()
-                            dockerImage.push('latest')
-                        }
-                    }
-                }
-            }
-
-            stage('Deploy') {
-                steps {
-                    script {
-                        if (env.BRANCH_NAME == 'main') {
-                            sh 'echo Deploying to production...'
-                        } else {
-                            sh 'echo Deploying to staging...'
-                        }
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-creds', 
+                        passwordVariable: 'DOCKER_PASSWORD', 
+                        usernameVariable: 'DOCKER_USERNAME'
+                    )]) {
+                        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                        sh 'docker push $IMAGE_NAME:$IMAGE_TAG'
+                        sh 'docker logout'
                     }
                 }
             }
