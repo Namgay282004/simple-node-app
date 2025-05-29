@@ -1,13 +1,14 @@
+// app.js
 const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Hello from Jenkins CI');
+  res.send('Hello from Jenkins CI!');
 });
 
-const PORT = process.env.PORT || 3000;
-if (require.main === module) {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
-
 module.exports = app;
+
+// Optional: start server if run directly
+if (require.main === module) {
+  app.listen(3000, () => console.log('Server running on port 3000'));
+}
