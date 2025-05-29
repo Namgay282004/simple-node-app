@@ -163,11 +163,10 @@
 //     }
 //   }
 // }
-
 @Library('jenkins-shared-library') _
-
 nodePipeline(
   nodejsTool: 'NodeJS 24.0.2',
-  dockerImage: '02230290namgay/simple-node-app:latest',
-  dockerCredentialsId: 'docker-hub-creds'
+  dockerImage: '02230290namgay/simple-node-app',
+  imageTag: 'latest'
 )
+
