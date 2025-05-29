@@ -92,74 +92,82 @@
 // }
 
 
-pipeline {
-  agent any
+// pipeline {
+//   agent any
 
-  tools {
-    nodejs 'NodeJS 24.0.2'
-  }
+//   tools {
+//     nodejs 'NodeJS 24.0.2'
+//   }
 
-  environment {
-    CI = 'true'
-    DOCKER_IMAGE = "02230290namgay/simple-node-app"
-    DOCKER_CREDENTIALS_ID = "docker-hub-creds"
-  }
+//   environment {
+//     CI = 'true'
+//     DOCKER_IMAGE = "02230290namgay/simple-node-app"
+//     DOCKER_CREDENTIALS_ID = "docker-hub-creds"
+//   }
 
-  stages {
-    stage('Install') {
-      steps {
-        sh 'npm install'
-      }
-    }
+//   stages {
+//     stage('Install') {
+//       steps {
+//         sh 'npm install'
+//       }
+//     }
 
-    stage('Build') {
-      steps {
-        sh 'npm run build'
-      }
-    }
+//     stage('Build') {
+//       steps {
+//         sh 'npm run build'
+//       }
+//     }
 
-    stage('Test') {
-      steps {
-        sh 'npm test'
-      }
-      post {
-        always {
-          junit 'junit.xml'
-        }
-      }
-    }
+//     stage('Test') {
+//       steps {
+//         sh 'npm test'
+//       }
+//       post {
+//         always {
+//           junit 'junit.xml'
+//         }
+//       }
+//     }
 
-    stage('Docker Build') {
-      steps {
-        script {
-          dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
-        }
-      }
-    }
+//     stage('Docker Build') {
+//       steps {
+//         script {
+//           dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+//         }
+//       }
+//     }
 
-    stage('Docker Push') {
-      steps {
-        script {
-          docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
-            dockerImage.push()
-            dockerImage.push('latest')
-          }
-        }
-      }
-    }
+//     stage('Docker Push') {
+//       steps {
+//         script {
+//           docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
+//             dockerImage.push()
+//             dockerImage.push('latest')
+//           }
+//         }
+//       }
+//     }
 
-    stage('Deploy') {
-      steps {
-        script {
-          if (env.BRANCH_NAME == 'main') {
-            sh 'echo Deploying to production...'
-            // Add your prod deploy steps here
-          } else {
-            sh 'echo Deploying to staging...'
-            // Add your staging deploy steps here
-          }
-        }
-      }
-    }
-  }
-}
+//     stage('Deploy') {
+//       steps {
+//         script {
+//           if (env.BRANCH_NAME == 'main') {
+//             sh 'echo Deploying to production...'
+//             // Add your prod deploy steps here
+//           } else {
+//             sh 'echo Deploying to staging...'
+//             // Add your staging deploy steps here
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+
+@Library('jenkins-shared-library') _
+
+nodePipeline(
+  nodejsTool: 'NodeJS 24.0.2',
+  dockerImage: '02230290namgay/simple-node-app:latest',
+  dockerCredentialsId: 'docker-hub-creds'
+)
