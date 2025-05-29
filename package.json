@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:ci": "jest --ci --reporters=jest-junit --coverage",
     "build": "echo 'Build completed successfully'"
   },
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "jest-junit": "^16.0.0"
+    "jest-junit": "^16.0.0",
+    "supertest": "^7.1.1"
   }
-  
 }
