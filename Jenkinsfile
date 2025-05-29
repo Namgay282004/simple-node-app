@@ -102,7 +102,7 @@ pipeline {
   environment {
     CI = 'true'
     DOCKER_IMAGE = "your-dockerhub-username/simple-node-app"
-    DOCKER_CREDENTIALS_ID = "dockerhub-creds"
+    DOCKER_CREDENTIALS_ID = "docker-hub-creds"
   }
 
   stages {
