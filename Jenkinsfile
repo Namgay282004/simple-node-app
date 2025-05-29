@@ -37,23 +37,15 @@ pipeline {
             }
         }
         
-        stage('Run Tests') {
-            steps {
-                echo 'Running tests...'
-                sh 'npm test'
+        stage('Test') {
+        steps {
+            sh 'npm test -- --ci --reporters=jest-junit'
+        }
+        post {
+            always {
+            junit 'junit.xml'
             }
-            post {
-                always {
-                    // Only try to publish if junit.xml exists
-                    script {
-                        if (fileExists('junit.xml')) {
-                            junit 'junit.xml'
-                        } else {
-                            echo 'No junit.xml file found'
-                        }
-                    }
-                }
-            }
+        }
         }
         
         stage('Build') {
